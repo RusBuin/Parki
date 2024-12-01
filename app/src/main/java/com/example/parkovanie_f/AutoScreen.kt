@@ -46,7 +46,10 @@ fun AutoScreen() {
             ParkingSlot(8, isOccupied = true, isSelected = false, isUnavailable = false)
         )
     }
+
+    // Проверка, что хотя бы одно место выбрано
     val isSlotSelected = parkingSlots.any { it.isSelected }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -54,7 +57,7 @@ fun AutoScreen() {
             .padding(16.dp)
     ) {
         Text(
-            text = "",
+            text = "Choose a Parking Spot",
             style = androidx.compose.ui.text.TextStyle(
                 fontWeight = FontWeight.Bold,
                 fontSize = 32.sp,
@@ -75,15 +78,18 @@ fun AutoScreen() {
                 horizontalAlignment = Alignment.Start
             ) {
                 parkingSlots.subList(0, 4).forEach { slot ->
-                    ParkingSlotView(slot) { updateSlot(slot, parkingSlots) }
+                    ParkingSlotView(slot = slot, onClick = {
+                        updateSlot(slot, parkingSlots)
+                    })
                 }
             }
-            // Центральные полосы
+
+            // Центральная полоса
             Box(
                 modifier = Modifier
-                    .width(16.dp) // Ширина полосы
+                    .width(16.dp)
                     .height(550.dp)
-                    .background(Color.Black) // Цвет полосы
+                    .background(Color.Black)
             )
 
             // Правая сторона
@@ -92,21 +98,24 @@ fun AutoScreen() {
                 horizontalAlignment = Alignment.End
             ) {
                 parkingSlots.subList(4, 8).forEach { slot ->
-                    ParkingSlotView(slot) { updateSlot(slot, parkingSlots) }
+                    ParkingSlotView(slot = slot, onClick = {
+                        updateSlot(slot, parkingSlots)
+                    })
                 }
             }
-
         }
+
+        // Кнопка для подтверждения выбора
         Button(
             onClick = { /* Логика подтверждения выбора */ },
             enabled = isSlotSelected, // Кнопка активна только при выбранном месте
             colors = ButtonDefaults.buttonColors(
-                containerColor = if (isSlotSelected) Color(0xFF6200EE) else Color.Gray // Меняем цвет в зависимости от состояния
+                containerColor = if (isSlotSelected) Color(0xFF6200EE) else Color.Gray
             ),
             modifier = Modifier
-                .padding(top = 50.dp, end = 16.dp) // Отступ сверху и справа
-                .align(Alignment.End) // Размещаем кнопку ближе к правому краю
-                .size(width = 170.dp, height = 70.dp) // Увеличиваем размер кнопки
+                .padding(top = 50.dp, end = 16.dp)
+                .align(Alignment.End)
+                .size(width = 170.dp, height = 70.dp)
         ) {
             Text(
                 text = "Accept",

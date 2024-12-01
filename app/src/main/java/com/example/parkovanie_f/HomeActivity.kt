@@ -1,8 +1,9 @@
 package com.example.parkovanie_f
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
-import com.example.parkovanie_f.СasScreen
 import androidx.activity.compose.setContent
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -23,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
@@ -31,12 +33,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import com.example.parkovanie_f.ui.theme.Parkovanie_fTheme
 
 class HomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d("HomeActivity", "onCreate called")  // Логируем запуск активности
         setContent {
+            Log.d("HomeActivity", "Setting content")  // Логируем настройку контента
             Parkovanie_fTheme {
                 HomeScreen()
             }
@@ -59,8 +64,8 @@ fun HomeScreen() {
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
             NavigationBar(
-                containerColor = Color.DarkGray, // Прозрачный фон для навигации
-                contentColor = Color.Transparent // Прозрачные элементы навигации
+                containerColor = Color.DarkGray,
+                contentColor = Color.Transparent
             ) {
                 Row(
                     horizontalArrangement = Arrangement.Center,
@@ -74,7 +79,10 @@ fun HomeScreen() {
 
                         NavigationBarItem(
                             selected = selectedItem == index,
-                            onClick = { selectedItem = index },
+                            onClick = {
+                                Log.d("HomeScreen", "Selected item: $item") // Log when an item is selected
+                                selectedItem = index
+                            },
                             icon = {
                                 Box(
                                     modifier = Modifier
@@ -112,15 +120,22 @@ fun HomeScreen() {
                 .background(Color.DarkGray)
         ) {
             when (selectedItem) {
-                0 -> HomeScreen()
-                1 -> SearchScreen()
-                2 -> SettingsScreen()
+                0 -> {
+                    Log.d("HomeScreen", "Navigating to Auto Screen") // Log navigation
+                    TimeSelectionScreen()
+                }
+                1 -> {
+                    Log.d("HomeScreen", "Navigating to Search Screen") // Log navigation
+                    SearchScreen()
+                }
+                2 -> {
+                    Log.d("HomeScreen", "Navigating to Settings Screen") // Log navigation
+                    SettingsScreen()
+                }
             }
         }
     }
 }
-
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -131,7 +146,6 @@ fun SearchScreen() {
             .background(Color.DarkGray),
         contentAlignment = Alignment.TopCenter
     ) {
-
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top,
@@ -144,12 +158,12 @@ fun SearchScreen() {
                 Text(
                     text = "Find Your",
                     style = androidx.compose.ui.text.TextStyle(
-                        fontWeight = FontWeight.Bold, // Жирный шрифт
-                        fontSize = 32.sp, // Размер шрифта
-                        color = Color.White // Цвет текста
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 32.sp,
+                        color = Color.White
                     )
                 )
-                Spacer(modifier = Modifier.width(8.dp)) // Отступ между словами
+                Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = "",
                     style = androidx.compose.ui.text.TextStyle(
@@ -182,82 +196,76 @@ fun SearchScreen() {
                 )
             }
 
-            // Добавление поля ввода с иконкой поиска
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
                     .background(Color.Black)
-
                     .clip(RoundedCornerShape(40.dp))
             ) {
                 TextField(
                     value = "",
                     onValueChange = {},
-                    placeholder = { Text(text = "Search", style = androidx.compose.ui.text.TextStyle(color = Color.White
-                    ))  },
+                    placeholder = { Text(text = "Search", style = androidx.compose.ui.text.TextStyle(color = Color.White)) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(end = 56.dp) // Добавляем пространство для иконки
-                        .border(2.dp, Color.Black, shape = RoundedCornerShape(24.dp)), // Увеличиваем закругление
+                        .padding(end = 56.dp)
+                        .border(2.dp, Color.Black, shape = RoundedCornerShape(24.dp)),
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = Color.Transparent,
                         focusedIndicatorColor = Color(0xFF6200EE),
                         unfocusedIndicatorColor = Color.Gray
                     ),
-                    shape = RoundedCornerShape(24.dp), // Закругление
+                    shape = RoundedCornerShape(24.dp),
                     singleLine = true
                 )
 
-                // Иконка поиска
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = "Search",
                     modifier = Modifier
                         .size(50.dp)
-                        .align(Alignment.CenterEnd) // Выравнивание по правому краю
-                        .background(Color(0xFF6200EE), CircleShape) // Фиолетовый фон
-                        .padding(8.dp), // Отступ внутри фона
-                    tint = Color.White // Белая иконка
+                        .align(Alignment.CenterEnd)
+                        .background(Color(0xFF6200EE), CircleShape)
+                        .padding(8.dp),
+                    tint = Color.White
                 )
             }
         }
 
-        // Добавление изображения внизу
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 16.dp), // Отступ от нижнего края
+                .padding(bottom = 16.dp),
             contentAlignment = Alignment.BottomCenter
         ) {
             Image(
-                painter = painterResource(id = R.drawable.map_road), // Укажите ID ресурса
+                painter = painterResource(id = R.drawable.map_road),
                 contentDescription = "Image",
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(1400.dp) // Задайте высоту картинки
-                    .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)) // Закругление углов сверху
+                    .height(1400.dp)
+                    .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
             )
         }
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 80.dp), // Размещение ближе к низу
+                .padding(bottom = 80.dp),
             contentAlignment = Alignment.BottomStart
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp), // Отступы слева и справа
-                horizontalArrangement = Arrangement.SpaceBetween, // Разделяем элементы по краям
-                verticalAlignment = Alignment.CenterVertically // Выравнивание по центру вертикали
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                // Колонка с текстом
                 Column(
                     verticalArrangement = Arrangement.spacedBy(20.dp),
-                    horizontalAlignment = Alignment.Start // Выравнивание текста по левому краю
+                    horizontalAlignment = Alignment.Start
                 ) {
-                    // Заголовок
                     Text(
                         text = "Your Car",
                         style = androidx.compose.ui.text.TextStyle(
@@ -267,7 +275,6 @@ fun SearchScreen() {
                         )
                     )
 
-                    // Поля "ECV" и "Type"
                     Text(
                         text = "ECV: A123BC",
                         style = androidx.compose.ui.text.TextStyle(
@@ -283,11 +290,12 @@ fun SearchScreen() {
                         )
                     )
 
-                    // Кнопка "Edit"
                     Button(
-                        onClick = { /* Логика для редактирования данных */ },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE)), // Фиолетовый цвет кнопки
-                        modifier = Modifier.padding(top = 8.dp) // Отступ сверху
+                        onClick = {
+                            Log.d("SearchScreen", "Edit button clicked") // Log when the Edit button is clicked
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE)),
+                        modifier = Modifier.padding(top = 8.dp)
                     ) {
                         Text(
                             text = "Edit",
@@ -299,23 +307,17 @@ fun SearchScreen() {
                     }
                 }
 
-                // Рисунок машины
                 Image(
                     painter = painterResource(id = R.drawable.car),
                     contentDescription = "Car",
                     modifier = Modifier
-                        .size(100.dp) // Размер картинки
-                        .clip(RoundedCornerShape(12.dp)) // Закругление
+                        .size(100.dp)
+                        .clip(RoundedCornerShape(12.dp))
                 )
             }
         }
-
     }
 }
-
-
-
-
 
 @Composable
 fun SettingsScreen() {

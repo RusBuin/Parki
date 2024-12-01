@@ -28,6 +28,11 @@
                 android:name=".HomeActivity"
                 android:exported="true"
                 android:theme="@style/Theme.Parkovanie_f" />
+        <activity
+                android:name=".AutoActivity"
+                android:exported="true"
+                android:theme="@style/Theme.Parkovanie_f" />
+
     </application>
 
 </manifest>

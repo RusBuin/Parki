@@ -52,12 +52,3 @@ fun FullScreenImage() {
         modifier = Modifier.fillMaxSize()
     )
 }
-
-@Preview(showBackground = true)
-@Composable
-fun FullScreenImagePreview() {
-    Parkovanie_fTheme {
-        Log.d("FullScreenImagePreview", "Предварительный просмотр FullScreenImage")
-        FullScreenImage()
-    }
-}
