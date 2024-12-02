@@ -1,18 +1,16 @@
 package com.example.parkovanie_f
 
 import android.app.TimePickerDialog
-import android.content.Intent
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
+import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -22,21 +20,31 @@ import java.util.*
 
 @Composable
 fun TimeSelectionScreen() {
-    var selectedTime by remember { mutableStateOf("") } // For storing the selected time
-    var isDialogOpen by remember { mutableStateOf(false) } // For tracking the dialog state
-    var isTimeSelected by remember { mutableStateOf(false) } // For tracking if the time is selected
+    var selectedTime by remember { mutableStateOf("") }
+    var selectedDuration by remember { mutableStateOf(1) } // Default duration: 1 hour
+    var isTimeDialogOpen by remember { mutableStateOf(false) }
+    var isDurationDialogOpen by remember { mutableStateOf(false) }
+    var isTimeSelected by remember { mutableStateOf(false) }
 
-    // If the dialog is open, show it
-    if (isDialogOpen) {
+    if (isTimeDialogOpen) {
         TimePickerDialogComponent(
             onTimeSelected = { selectedHour, selectedMinute ->
                 selectedTime = String.format("%02d:%02d", selectedHour, selectedMinute)
-                isDialogOpen = false // Close the dialog after time selection
-                isTimeSelected = true // Mark that time was selected
+                isTimeDialogOpen = false
+                isTimeSelected = true
             },
-            onDialogDismissed = {
-                isDialogOpen = false // Close the dialog without selecting time
-            }
+            onDialogDismissed = { isTimeDialogOpen = false }
+        )
+    }
+
+    if (isDurationDialogOpen) {
+        DurationPickerDialogComponent(
+            currentDuration = selectedDuration,
+            onDurationSelected = { duration ->
+                selectedDuration = duration
+                isDurationDialogOpen = false
+            },
+            onDialogDismissed = { isDurationDialogOpen = false }
         )
     }
 
@@ -49,54 +57,99 @@ fun TimeSelectionScreen() {
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Select Reservation Time",
+            text = "Reserve Your Spot",
             style = androidx.compose.ui.text.TextStyle(
                 fontWeight = FontWeight.Bold,
-                fontSize = 32.sp,
+                fontSize = 36.sp,
                 color = Color.White
             ),
-            modifier = Modifier.padding(bottom = 24.dp)
+            modifier = Modifier.padding(bottom = 32.dp)
         )
 
-        // Button to choose time
+        // Time Selection Button
         Button(
-            onClick = { isDialogOpen = true },
+            onClick = { isTimeDialogOpen = true },
             modifier = Modifier
-                .padding(top = 16.dp)
-                .size(width = 240.dp, height = 60.dp)
-                .background(Color(0xFF6200EE), shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE))
+                .size(width = 260.dp, height = 70.dp)
+                .shadow(8.dp, shape = RoundedCornerShape(16.dp)),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE)) // Purple color
         ) {
             Text(
                 text = "Select Time",
-                style = androidx.compose.ui.text.TextStyle(fontSize = 18.sp, color = Color.White)
+                style = androidx.compose.ui.text.TextStyle(
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.White
+                )
             )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Display the selected time
-        if (selectedTime.isNotEmpty()) {
+        // Duration Selection Button
+        Button(
+            onClick = { isDurationDialogOpen = true },
+            modifier = Modifier
+                .size(width = 260.dp, height = 70.dp)
+                .shadow(8.dp, shape = RoundedCornerShape(16.dp)),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF03DAC5)) // Teal color
+        ) {
             Text(
-                text = "Selected Time: $selectedTime",
-                style = androidx.compose.ui.text.TextStyle(fontSize = 20.sp, color = Color.White),
-                modifier = Modifier.padding(bottom = 24.dp)
+                text = "Select Duration",
+                style = androidx.compose.ui.text.TextStyle(
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.White
+                )
             )
         }
 
-        // "Next" button appears after time is selected, but doesn't trigger any navigation now
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Display Selected Time
+        if (selectedTime.isNotEmpty()) {
+            Text(
+                text = "Selected Time: $selectedTime",
+                style = androidx.compose.ui.text.TextStyle(
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Light,
+                    color = Color(0xFFE0E0E0)
+                )
+            )
+        }
+
+        // Display Selected Duration
         if (isTimeSelected) {
+            Text(
+                text = "Duration: $selectedDuration hour(s)",
+                style = androidx.compose.ui.text.TextStyle(
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Light,
+                    color = Color(0xFFE0E0E0)
+                ),
+                modifier = Modifier.padding(top = 16.dp)
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Confirm Button
+            val context = LocalContext.current
             Button(
-                onClick = { /* Do nothing or some other action */ },
+                onClick = {
+                    Log.d("TimeSelectionScreen", "Selected time: $selectedTime, Duration: $selectedDuration hour(s)")
+                },
                 modifier = Modifier
-                    .padding(top = 16.dp)
-                    .size(width = 240.dp, height = 60.dp)
-                    .background(Color(0xFF03DAC5), shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF03DAC5))
+                    .size(width = 260.dp, height = 70.dp)
+                    .shadow(8.dp, shape = RoundedCornerShape(16.dp)),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32)) // Green color
             ) {
                 Text(
-                    text = "Next",
-                    style = androidx.compose.ui.text.TextStyle(fontSize = 18.sp, color = Color.White)
+                    text = "Confirm",
+                    style = androidx.compose.ui.text.TextStyle(
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.White
+                    )
                 )
             }
         }
@@ -110,18 +163,50 @@ fun TimePickerDialogComponent(onTimeSelected: (Int, Int) -> Unit, onDialogDismis
     val hour = calendar.get(Calendar.HOUR_OF_DAY)
     val minute = calendar.get(Calendar.MINUTE)
 
-    // 24-hour format time picker
     TimePickerDialog(
         context,
         { _, selectedHour, selectedMinute ->
-            onTimeSelected(selectedHour, selectedMinute) // Return selected time
+            onTimeSelected(selectedHour, selectedMinute)
         },
         hour,
         minute,
-        true // Use 24-hour format
+        true
     ).apply {
-        setOnDismissListener {
-            onDialogDismissed() // Close the dialog without selecting time
-        }
+        setOnDismissListener { onDialogDismissed() }
     }.show()
+}
+
+@Composable
+fun DurationPickerDialogComponent(
+    currentDuration: Int,
+    onDurationSelected: (Int) -> Unit,
+    onDialogDismissed: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = { onDialogDismissed() },
+        title = {
+            Text(text = "Select Duration", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+        },
+        text = {
+            Column {
+                for (i in 1..24) {
+                    Text(
+                        text = "$i hour(s)",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onDurationSelected(i) }
+                            .padding(vertical = 8.dp),
+                        fontSize = 18.sp,
+                        color = if (i == currentDuration) Color(0xFF6200EE) else Color.Black // Highlight selected duration
+                    )
+                }
+            }
+        },
+        confirmButton = {},
+        dismissButton = {
+            TextButton(onClick = { onDialogDismissed() }) {
+                Text(text = "Cancel")
+            }
+        }
+    )
 }

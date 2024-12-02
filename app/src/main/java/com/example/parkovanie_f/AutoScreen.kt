@@ -39,7 +39,7 @@ fun AutoScreen() {
             ParkingSlot(1, isOccupied = false, isSelected = false, isUnavailable = false),
             ParkingSlot(2, isOccupied = true, isSelected = false, isUnavailable = false),
             ParkingSlot(3, isOccupied = false, isSelected = false, isUnavailable = false),
-            ParkingSlot(4, isOccupied = false, isSelected = false, isUnavailable = true), // Недоступное место
+            ParkingSlot(4, isOccupied = false, isSelected = false, isUnavailable = false), // Недоступное место
             ParkingSlot(5, isOccupied = false, isSelected = false, isUnavailable = false),
             ParkingSlot(6, isOccupied = false, isSelected = false, isUnavailable = false),
             ParkingSlot(7, isOccupied = true, isSelected = false, isUnavailable = false),
@@ -53,7 +53,7 @@ fun AutoScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.DarkGray)
+            .background(Color(0xFF1E1E2F))
             .padding(16.dp)
     ) {
         Text(
@@ -65,6 +65,7 @@ fun AutoScreen() {
             ),
             modifier = Modifier.padding(bottom = 24.dp)
         )
+
 
         Row(
             modifier = Modifier
@@ -127,6 +128,7 @@ fun AutoScreen() {
         }
     }
 }
+
 
 @Composable
 fun ParkingSlotView(slot: ParkingSlot, onClick: () -> Unit) {

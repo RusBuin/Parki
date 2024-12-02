@@ -53,7 +53,7 @@ class HomeActivity : ComponentActivity() {
 fun HomeScreen() {
     var selectedItem by remember { mutableStateOf(0) }
 
-    val items = listOf("Auto", "Search", "Settings")
+    val items = listOf("Rezervation", "Search", "Settings")
     val icons = listOf(
         Icons.Default.Face,
         Icons.Default.Search,
@@ -122,7 +122,7 @@ fun HomeScreen() {
             when (selectedItem) {
                 0 -> {
                     Log.d("HomeScreen", "Navigating to Auto Screen") // Log navigation
-                    TimeSelectionScreen()
+                     PriceScreen()
                 }
                 1 -> {
                     Log.d("HomeScreen", "Navigating to Search Screen") // Log navigation
@@ -140,6 +140,10 @@ fun HomeScreen() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen() {
+    var carType by remember { mutableStateOf("Nakladne") }
+    var carNumber by remember { mutableStateOf("A123BC") }
+    var isEditDialogOpen by remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -151,104 +155,52 @@ fun SearchScreen() {
             verticalArrangement = Arrangement.Top,
             modifier = Modifier.padding(top = 50.dp)
         ) {
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.padding(bottom = 8.dp)
-            ) {
-                Text(
-                    text = "Find Your",
-                    style = androidx.compose.ui.text.TextStyle(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 32.sp,
-                        color = Color.White
-                    )
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "",
-                    style = androidx.compose.ui.text.TextStyle(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 32.sp,
-                        color = Color.White
-                    )
-                )
-            }
+            // Заголовок
+            Text(
+                text = "Find Your Parking Space",
+                style = androidx.compose.ui.text.TextStyle(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 32.sp,
+                    color = Color.White
+                ),
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
 
-            Row(
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = "Parking Space",
-                    style = androidx.compose.ui.text.TextStyle(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 32.sp,
-                        color = Color.White
-                    )
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "",
-                    style = androidx.compose.ui.text.TextStyle(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 32.sp,
-                        color = Color.White
-                    )
-                )
-            }
-
+            // Поле поиска
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
-                    .background(Color.Black)
-                    .clip(RoundedCornerShape(40.dp))
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .background(Color.Black, RoundedCornerShape(40.dp))
             ) {
                 TextField(
                     value = "",
                     onValueChange = {},
-                    placeholder = { Text(text = "Search", style = androidx.compose.ui.text.TextStyle(color = Color.White)) },
+                    placeholder = { Text("Search", style = androidx.compose.ui.text.TextStyle(color = Color.Gray)) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(end = 56.dp)
-                        .border(2.dp, Color.Black, shape = RoundedCornerShape(24.dp)),
+                        .padding(end = 56.dp),
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = Color.Transparent,
                         focusedIndicatorColor = Color(0xFF6200EE),
                         unfocusedIndicatorColor = Color.Gray
                     ),
-                    shape = RoundedCornerShape(24.dp),
                     singleLine = true
                 )
 
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "Search",
-                    modifier = Modifier
-                        .size(50.dp)
-                        .align(Alignment.CenterEnd)
-                        .background(Color(0xFF6200EE), CircleShape)
-                        .padding(8.dp),
-                    tint = Color.White
-                )
             }
-        }
 
-        Box(
+        }
+        Image(
+            painter = painterResource(id = R.drawable.map_road),
+            contentDescription = "Image",
             modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = 16.dp),
-            contentAlignment = Alignment.BottomCenter
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.map_road),
-                contentDescription = "Image",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(1400.dp)
-                    .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
-            )
-        }
+                .fillMaxWidth()
+                .height(1400.dp)
+                .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
+        )
 
+        // Информация об автомобиле
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -263,7 +215,7 @@ fun SearchScreen() {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
                     horizontalAlignment = Alignment.Start
                 ) {
                     Text(
@@ -276,14 +228,14 @@ fun SearchScreen() {
                     )
 
                     Text(
-                        text = "ECV: A123BC",
+                        text = "ECV: $carNumber",
                         style = androidx.compose.ui.text.TextStyle(
                             fontSize = 26.sp,
                             color = Color.White
                         )
                     )
                     Text(
-                        text = "Type: Sedan",
+                        text = "Type: $carType",
                         style = androidx.compose.ui.text.TextStyle(
                             fontSize = 26.sp,
                             color = Color.White
@@ -291,9 +243,7 @@ fun SearchScreen() {
                     )
 
                     Button(
-                        onClick = {
-                            Log.d("SearchScreen", "Edit button clicked") // Log when the Edit button is clicked
-                        },
+                        onClick = { isEditDialogOpen = true },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE)),
                         modifier = Modifier.padding(top = 8.dp)
                     ) {
@@ -306,18 +256,68 @@ fun SearchScreen() {
                         )
                     }
                 }
-
-                Image(
-                    painter = painterResource(id = R.drawable.car),
-                    contentDescription = "Car",
-                    modifier = Modifier
-                        .size(100.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                )
             }
         }
     }
+
+    // Диалог редактирования
+    if (isEditDialogOpen) {
+        EditCarDialog(
+            initialType = carType,
+            initialNumber = carNumber,
+            onSave = { newType, newNumber ->
+                carType = newType
+                carNumber = newNumber
+                isEditDialogOpen = false
+            },
+            onCancel = { isEditDialogOpen = false }
+        )
+    }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun EditCarDialog(
+    initialType: String,
+    initialNumber: String,
+    onSave: (String, String) -> Unit,
+    onCancel: () -> Unit
+) {
+    var newType by remember { mutableStateOf(initialType) }
+    var newNumber by remember { mutableStateOf(initialNumber) }
+
+    AlertDialog(
+        onDismissRequest = { onCancel() },
+        title = { Text("Edit Car Details", fontSize = 20.sp, fontWeight = FontWeight.Bold) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                TextField(
+                    value = newNumber,
+                    onValueChange = { newNumber = it },
+                    label = { Text("Car Number") },
+                    colors = TextFieldDefaults.textFieldColors(containerColor = Color.Transparent)
+                )
+                TextField(
+                    value = newType,
+                    onValueChange = { newType = it },
+                    label = { Text("Car Type") },
+                    colors = TextFieldDefaults.textFieldColors(containerColor = Color.Transparent)
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onSave(newType, newNumber) }) {
+                Text("Save", color = Color(0xFF6200EE))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = { onCancel() }) {
+                Text("Cancel", color = Color.Gray)
+            }
+        }
+    )
+}
+
 
 @Composable
 fun SettingsScreen() {
